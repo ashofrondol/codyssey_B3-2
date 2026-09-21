@@ -354,7 +354,7 @@ Add payment feature
 | R1-5 | 에러 메시지 표준화(`Invalid args` 등) | ✅ 충족 | 상수 `INVALID = 'Invalid args'`(`main.py:257`) 사용처 `269,285,296,310,323,327,351,370,391,458`. `Unknown branch: <name>` → `main.py:118`. `Unknown commit: <hash>` → `main.py:354,357,375`. 비고: 문구는 표준화됐으나 `Unknown …` 계열은 3곳에 인라인 생성돼 상수화까지는 안 됨(명세는 문구 표준화만 요구) |
 | R2-1 | 커밋 최소 필드 `hash/message/author/timestamp/parents` | ✅ 충족 | `main.py:24-29` `Commit.__init__` 이 5개 필드를 모두 보유. `timestamp`는 epoch float, 표시는 `time_str()`(`main.py:31-32`) |
 | R2-2 | 커밋은 0개 이상의 부모 | ✅ 충족 | `main.py:29` `self.parents = list(parents)` — 리스트 모델링. 루트 커밋은 `parents=[]`(`main.py:125`). 다중 부모 처리도 알고리즘 전반에서 정상 동작 확인(합성 merge 노드 테스트 통과). 비고: B2(merge) 미구현이라 **실행 경로상 부모가 2개가 되는 명령은 없다** |
-| R2-3 | DAG(비순환) 보장 | ✅ 충족 | `main.py:121-132` — 새 커밋은 항상 기존 HEAD(과거 노드)만 부모로 잡고, 기존 커밋의 `parents`는 절대 수정되지 않아 구조적으로 사이클 불가. 설계 근거는 `README.md:41,108`에 서술. 별도 사이클 검증 루틴은 없으나 불변식이 생성 시점에 유지됨 |
+| R2-3 | DAG(비순환) 보장 | ✅ 충족 | `main.py:121-132` — 새 커밋은 항상 기존 HEAD(과거 노드)만 부모로 잡고, 기존 커밋의 `parents`는 절대 수정되지 않아 구조적으로 사이클 불가. 설계 근거는 `README.md:476,108`에 서술. 별도 사이클 검증 루틴은 없으나 불변식이 생성 시점에 유지됨 |
 | R2-4 | hash로 빠른 조회(해시맵) | ✅ 충족 | `main.py:70` `self.commits = {}  # hash -> Commit`. 조회는 `repo.commits[h]` / `in repo.commits`(`main.py:168,219,332,353,356,412`) 로 평균 O(1) |
 | R2-5 | hash 세션 내 유일 | ✅ 충족 | `main.py:86-93` `_new_hash()` — 증가 카운터를 해시 입력에 섞고(`sha1(f'{counter}\|{author}\|{message}\|{ts}')[:7]`) `if h not in self.commits` 충돌 검사 후 재시도. 비고: `INIT` 재실행 시 카운터가 0으로 리셋되나(`main.py:106`) 동시에 `commits`도 비워지므로(`main.py:101`) 살아있는 저장소 내 충돌은 없음 |
 | R3-1 | 검색 시 전체 순회 금지 | ✅ 충족 | `main.py:234-239` — `search_keyword`/`search_author` 모두 `dict.get()` 단일 조회. 커밋 전체를 도는 루프 없음(명시 주석 `main.py:235`) |

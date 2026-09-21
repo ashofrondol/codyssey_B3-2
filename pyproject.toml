@@ -1,0 +1,39 @@
+# ============================================================
+# Mini Git — 런타임 의존성 0 (표준 라이브러리만 사용).
+# 과제 제약(README 0.6)상 외부 패키지를 쓸 수 없으므로 dependencies 는 비어 있다.
+# 그래도 매니페스트를 두는 이유: 이 저장소가 "요구하는 파이썬 버전"과
+# "테스트를 어디서 찾는지"를 사람 기억이 아니라 파일에 적어두기 위해서다.
+#
+# 테스트는 표준 라이브러리 unittest 로 작성돼 있어 pytest 없이도 돌아간다:
+#     python3 -m unittest discover -s tests
+# pytest 가 설치돼 있으면 아래 설정으로 `pytest` 한 번에도 돌아간다.
+# ============================================================
+
+[project]
+name = "mini-git"
+version = "0.1.0"
+description = "CLI 기반 미니 버전관리 시스템 (커밋 DAG / 위상 정렬 / 역색인, 표준 라이브러리만 사용)"
+requires-python = ">=3.10"
+dependencies = []
+
+# 애플리케이션이다. 빌드/설치 대상이 아니다 (`python main.py` 로 실행).
+[tool.uv]
+package = false
+
+# ---------- Ruff (린터 + 포매터) ----------
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+# E/F: pycodestyle+pyflakes, I: isort, UP: pyupgrade, B: bugbear
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.format]
+# main.py 가 작은따옴표를 쓴다. 포매터가 전 파일을 뒤집어 diff 를 만들지 않도록 맞춘다.
+quote-style = "single"
+
+# ---------- pytest (선택) ----------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

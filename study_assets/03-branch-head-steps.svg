@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="704" viewBox="0 0 860 704" role="img" aria-labelledby="title desc">
+<title id="title">명령 다섯 개로 보는 브랜치·HEAD 포인터 변화</title>
+<desc id="desc">init, commit, branch, switch, commit 다섯 명령을 차례로 실행할 때 HEAD·브랜치·커밋이 어떻게 바뀌는지 패널 다섯 칸으로 보여 준다. branch 는 현재 커밋을 가리키는 이름표를 하나 더 만들고, switch 는 HEAD 만 옮기며, commit 은 새 커밋을 만들고 현재 브랜치 이름표만 그 커밋으로 옮긴다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="860" height="704"/>
+<text x="24" y="36" class="th">명령 다섯 개로 보는 브랜치·HEAD 포인터 변화</text>
+<text x="24" y="58" class="ts">노랑 = 이 명령으로 방금 바뀐 것 · 보라 = 커밋 · 회색 화살표 = 가리킴 · 커밋은 한 번도 복사되지 않는다</text>
+<rect class="zone" x="24" y="72" width="812" height="112" rx="10"/>
+<text x="40" y="104" class="tb">① 저장소 만들기</text>
+<text x="40" y="132" class="mono">init "Alice"</text>
+<text x="40" y="158" class="ts">main.py:103-104</text>
+<text x="668" y="112" class="mono">main → None</text>
+<text x="668" y="136" class="mono">HEAD → main</text>
+<line class="ln" x1="354" y1="128" x2="396" y2="128" marker-end="url(#arrow)"/>
+<line class="ln" x1="482" y1="128" x2="516" y2="128" marker-end="url(#arrow)"/>
+<rect class="yellow" x="272" y="113" width="80" height="30" rx="8"/>
+<text x="312" y="133" text-anchor="middle" class="mono">HEAD</text>
+<rect class="yellow" x="400" y="113" width="80" height="30" rx="8"/>
+<text x="440" y="133" text-anchor="middle" class="mono">main</text>
+<rect class="zone" x="520" y="110" width="112" height="36" rx="8"/>
+<text x="576" y="133" text-anchor="middle" class="ts">None (커밋 없음)</text>
+<rect class="zone" x="24" y="196" width="812" height="112" rx="10"/>
+<text x="40" y="228" class="tb">② 첫 커밋</text>
+<text x="40" y="256" class="mono">commit "Initial commit"</text>
+<text x="40" y="282" class="ts">main.py:132</text>
+<text x="668" y="236" class="mono">main → 112f66d</text>
+<text x="668" y="260" class="ts">부모 없음 (첫 커밋)</text>
+<line class="ln" x1="354" y1="252" x2="396" y2="252" marker-end="url(#arrow)"/>
+<line class="ln" x1="482" y1="252" x2="516" y2="252" marker-end="url(#arrow)"/>
+<rect class="box" x="272" y="237" width="80" height="30" rx="8"/>
+<text x="312" y="257" text-anchor="middle" class="mono">HEAD</text>
+<rect class="yellow" x="400" y="237" width="80" height="30" rx="8"/>
+<text x="440" y="257" text-anchor="middle" class="mono">main</text>
+<rect class="yellow" x="520" y="234" width="112" height="36" rx="8"/>
+<text x="576" y="257.0" text-anchor="middle" class="mono">112f66d</text>
+<rect class="zone" x="24" y="320" width="812" height="112" rx="10"/>
+<text x="40" y="352" class="tb">③ 이름표 하나 더</text>
+<text x="40" y="380" class="mono">branch feature</text>
+<text x="40" y="406" class="ts">main.py:114</text>
+<text x="668" y="360" class="mono">main → 112f66d</text>
+<text x="668" y="384" class="mono">feature → 112f66d</text>
+<text x="668" y="408" class="ts">LOG: [main, feature]</text>
+<line class="ln" x1="354" y1="356" x2="396" y2="356" marker-end="url(#arrow)"/>
+<rect class="box" x="272" y="341" width="80" height="30" rx="8"/>
+<text x="312" y="361" text-anchor="middle" class="mono">HEAD</text>
+<rect class="box" x="400" y="341" width="80" height="30" rx="8"/>
+<text x="440" y="361" text-anchor="middle" class="mono">main</text>
+<rect class="yellow" x="400" y="381" width="80" height="30" rx="8"/>
+<text x="440" y="401" text-anchor="middle" class="mono">feature</text>
+<line class="ln" x1="482" y1="356" x2="516" y2="356" marker-end="url(#arrow)"/>
+<line class="ln" x1="482" y1="396" x2="516" y2="396" marker-end="url(#arrow)"/>
+<rect class="purple" x="520" y="350" width="112" height="52" rx="8"/>
+<text x="576" y="381.0" text-anchor="middle" class="mono">112f66d</text>
+<rect class="zone" x="24" y="444" width="812" height="112" rx="10"/>
+<text x="40" y="476" class="tb">④ 브랜치 옮겨 타기</text>
+<text x="40" y="504" class="mono">switch feature</text>
+<text x="40" y="530" class="ts">main.py:119</text>
+<text x="668" y="484" class="mono">HEAD → feature</text>
+<text x="668" y="508" class="ts">커밋·브랜치는 그대로</text>
+<line class="ln" x1="354" y1="520" x2="396" y2="520" marker-end="url(#arrow)"/>
+<rect class="box" x="400" y="465" width="80" height="30" rx="8"/>
+<text x="440" y="485" text-anchor="middle" class="mono">main</text>
+<rect class="yellow" x="272" y="505" width="80" height="30" rx="8"/>
+<text x="312" y="525" text-anchor="middle" class="mono">HEAD</text>
+<rect class="box" x="400" y="505" width="80" height="30" rx="8"/>
+<text x="440" y="525" text-anchor="middle" class="mono">feature</text>
+<line class="ln" x1="482" y1="480" x2="516" y2="480" marker-end="url(#arrow)"/>
+<line class="ln" x1="482" y1="520" x2="516" y2="520" marker-end="url(#arrow)"/>
+<rect class="purple" x="520" y="474" width="112" height="52" rx="8"/>
+<text x="576" y="505.0" text-anchor="middle" class="mono">112f66d</text>
+<rect class="zone" x="24" y="568" width="812" height="112" rx="10"/>
+<text x="40" y="600" class="tb">⑤ feature 에 커밋</text>
+<text x="40" y="628" class="mono">commit "Add login feature"</text>
+<text x="40" y="654" class="ts">main.py:124-125, 132</text>
+<text x="668" y="608" class="mono">main → 112f66d</text>
+<text x="668" y="632" class="mono">feature → af4e47c</text>
+<text x="668" y="656" class="ts">main 은 그대로</text>
+<line class="ln" x1="354" y1="654" x2="396" y2="654" marker-end="url(#arrow)"/>
+<line class="ln" x1="482" y1="594" x2="516" y2="594" marker-end="url(#arrow)"/>
+<line class="ln" x1="482" y1="654" x2="516" y2="654" marker-end="url(#arrow)"/>
+<rect class="box" x="400" y="579" width="80" height="30" rx="8"/>
+<text x="440" y="599" text-anchor="middle" class="mono">main</text>
+<rect class="box" x="272" y="639" width="80" height="30" rx="8"/>
+<text x="312" y="659" text-anchor="middle" class="mono">HEAD</text>
+<rect class="yellow" x="400" y="639" width="80" height="30" rx="8"/>
+<text x="440" y="659" text-anchor="middle" class="mono">feature</text>
+<rect class="purple" x="520" y="578" width="112" height="32" rx="8"/>
+<text x="576" y="599.0" text-anchor="middle" class="mono">112f66d</text>
+<rect class="yellow" x="520" y="638" width="112" height="32" rx="8"/>
+<text x="576" y="659.0" text-anchor="middle" class="mono">af4e47c</text>
+<line class="ln" x1="556" y1="636" x2="556" y2="614" marker-end="url(#arrow)"/>
+<text x="566" y="629" class="ts">부모(parents)</text>
+</svg>

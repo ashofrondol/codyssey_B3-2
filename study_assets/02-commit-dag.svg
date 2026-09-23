@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="444" viewBox="0 0 860 444" role="img" aria-labelledby="title desc">
+<title id="title">커밋 4개로 만든 그래프(DAG)와 브랜치 포인터</title>
+<desc id="desc">시계를 고정해 실제로 만든 커밋 4개(112f66d, af4e47c, 955b518, 8690126)와 부모 화살표를 그린 그래프다. 화살표는 늘 새 커밋에서 옛 커밋으로만 향하고, main 은 955b518, feature 는 8690126 을 가리키며 HEAD 는 커밋이 아니라 feature 이름표를 가리킨다. 옛 커밋이 새 커밋을 부모로 삼는 선(빨간 점선)은 생길 수 없다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="860" height="444"/>
+<text x="24" y="36" class="th">커밋 4개로 만든 그래프(DAG)와 브랜치 포인터</text>
+<text x="24" y="58" class="ts">회색 화살표 = parents (자식이 부모를 가리킴) · 보라 = 커밋 · 노랑 = HEAD · 빨간 점선 = 만들어질 수 없는 선</text>
+<path class="ln" d="M258,164 L150,164 L150,212" marker-end="url(#arrow)"/>
+<path class="ln" d="M452,340 L184,340 L184,292" marker-end="url(#arrow)"/>
+<line class="ln" x1="646" y1="164" x2="432" y2="164" marker-end="url(#arrow)"/>
+<rect class="bg" x="504" y="146" width="68" height="28"/>
+<text x="538" y="165" text-anchor="middle" class="ts">parents</text>
+<path class="ln ln-red dash" d="M116,288 L116,400 L836,400 L836,164 L820,164" marker-end="url(#arrow-red)"/>
+<rect class="bg" x="230" y="386" width="408" height="28"/>
+<text x="434" y="405" text-anchor="middle" class="ts c-red">✗ 옛 커밋이 새 커밋을 부모로? — 생길 수 없음(사이클)</text>
+<rect class="purple" x="66" y="216" width="168" height="72" rx="10"/>
+<text x="150" y="240" text-anchor="middle" class="mono c-purple">112f66d</text>
+<text x="150" y="260" text-anchor="middle" class="ts">Initial commit</text>
+<text x="150" y="278" text-anchor="middle" class="ts">09:00</text>
+<rect class="purple" x="260" y="128" width="168" height="72" rx="10"/>
+<text x="344" y="152" text-anchor="middle" class="mono c-purple">af4e47c</text>
+<text x="344" y="172" text-anchor="middle" class="ts">Add login feature</text>
+<text x="344" y="190" text-anchor="middle" class="ts">09:15</text>
+<rect class="purple" x="454" y="304" width="168" height="72" rx="10"/>
+<text x="538" y="328" text-anchor="middle" class="mono c-purple">955b518</text>
+<text x="538" y="348" text-anchor="middle" class="ts">Add payment feature</text>
+<text x="538" y="366" text-anchor="middle" class="ts">09:30</text>
+<rect class="purple" x="648" y="128" width="168" height="72" rx="10"/>
+<text x="732" y="152" text-anchor="middle" class="mono c-purple">8690126</text>
+<text x="732" y="172" text-anchor="middle" class="ts">Fix login bug</text>
+<text x="732" y="190" text-anchor="middle" class="ts">09:45</text>
+<rect class="box" x="684" y="72" width="88" height="28" rx="8"/>
+<text x="728" y="91" text-anchor="middle" class="mono">feature</text>
+<line class="ln" x1="728" y1="100" x2="728" y2="124" marker-end="url(#arrow)"/>
+<rect class="yellow" x="584" y="72" width="64" height="28" rx="8"/>
+<text x="616" y="91" text-anchor="middle" class="mono tb">HEAD</text>
+<line class="ln" x1="648" y1="86" x2="680" y2="86" marker-end="url(#arrow)"/>
+<rect class="box" x="664" y="326" width="72" height="28" rx="8"/>
+<text x="700" y="345" text-anchor="middle" class="mono">main</text>
+<line class="ln" x1="662" y1="340" x2="626" y2="340" marker-end="url(#arrow)"/>
+<text x="836" y="430" text-anchor="end" class="ts">parents 는 만든 뒤 바뀌지 않는다 (main.py:124-125)</text>
+</svg>

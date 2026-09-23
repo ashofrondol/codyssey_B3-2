@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="700" viewBox="0 0 880 700" role="img" aria-labelledby="title desc">
+<title id="title">commit "Add login feature" 한 줄이 지나가는 길</title>
+<desc id="desc">REPL에 commit "Add login feature" 를 입력하면 입력, 파싱, 명령 찾기, 검사, 저장소에 쓰기, 출력의 여섯 단계를 main.py 의 정해진 줄 번호 순서로 지나 [feature af4e47c] Add login feature 가 출력된다. 저장소에 쓰기 단계에서는 시각, 해시, 부모, 커밋 보관, 자식 목록, 브랜치 끝 이동, 검색 색인이 차례로 바뀐다. 파싱·명령 찾기·검사 단계에서 입력이 잘못되면 오른쪽 빨간 상자의 표준 문구로 빠져나간다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="700"/>
+<text class="th" x="24" y="36">commit "Add login feature" 한 줄이 지나가는 길</text>
+<text class="ts" x="24" y="64">전제: init "Alice" → commit "Initial commit" → branch feature → switch feature 까지 실행 (HEAD = feature → 112f66d)</text>
+<rect class="blue" x="24" y="80" width="560" height="52" rx="10"/>
+<text class="tb c-blue" x="40" y="102">① 입력</text>
+<text class="ts" x="40" y="121">main.py:444</text>
+<text class="mono" x="168" y="102">input('mini-git&gt; ')</text>
+<text class="mono" x="168" y="121">→ 'commit "Add login feature"'</text>
+<rect class="blue" x="24" y="152" width="560" height="52" rx="10"/>
+<text class="tb c-blue" x="40" y="174">② 파싱</text>
+<text class="ts" x="40" y="193">main.py:431-436</text>
+<text class="mono" x="168" y="174">parse_line()</text>
+<text class="mono" x="168" y="193">→ ['commit', 'Add login feature']</text>
+<rect class="blue" x="24" y="224" width="560" height="52" rx="10"/>
+<text class="tb c-blue" x="40" y="246">③ 명령 찾기</text>
+<text class="ts" x="40" y="265">main.py:460-462</text>
+<text class="mono" x="168" y="246">tokens[0].lower() · COMMANDS.get('commit')</text>
+<text class="mono" x="168" y="265">→ cmd_commit</text>
+<rect class="blue" x="24" y="296" width="560" height="52" rx="10"/>
+<text class="tb c-blue" x="40" y="318">④ 검사</text>
+<text class="ts" x="40" y="337">main.py:305-311</text>
+<text class="mono" x="168" y="318">cmd_commit()</text>
+<text class="ts" x="168" y="337">→ require_init ✓ · 인자 1개 ✓</text>
+<rect class="purple" x="24" y="368" width="560" height="236" rx="10"/>
+<text class="tb c-purple" x="40" y="392">⑤ 저장소에 쓰기</text>
+<text class="mono" x="168" y="392">Repository.commit()</text>
+<text class="ts" x="568" y="392" text-anchor="end">main.py:121-138</text>
+<line class="ln ln-purple" x1="38" y1="404" x2="570" y2="404" stroke-opacity="0.35"/>
+<text class="mono c-purple" x="40" y="426">a</text>
+<text class="mono" x="60" y="426">ts = time.time() → 1705310100.0</text>
+<text class="ts" x="568" y="426" text-anchor="end">지금 시각 · 122</text>
+<text class="mono c-purple" x="40" y="447">b</text>
+<text class="mono" x="60" y="447">_new_hash()</text>
+<text class="ts" x="568" y="447" text-anchor="end">해시 만들기 · 123, 86-93</text>
+<text class="mono" x="60" y="468">sha1('2|Alice|Add login feature|1705310100.0') → af4e47c</text>
+<text class="mono c-purple" x="40" y="489">c</text>
+<text class="mono" x="60" y="489">head_commit() → parent 112f66d</text>
+<text class="ts" x="568" y="489" text-anchor="end">부모 찾기 · 124-125</text>
+<text class="mono c-purple" x="40" y="510">d</text>
+<text class="mono" x="60" y="510">commits['af4e47c'] = Commit(...)</text>
+<text class="ts" x="568" y="510" text-anchor="end">커밋 보관 · 126-127</text>
+<text class="mono c-purple" x="40" y="531">e</text>
+<text class="mono" x="60" y="531">children['112f66d'].append('af4e47c')</text>
+<text class="ts" x="568" y="531" text-anchor="end">자식 목록 · 128-130</text>
+<text class="mono c-purple" x="40" y="552">f</text>
+<text class="mono" x="60" y="552">branches['feature'] = 'af4e47c'</text>
+<text class="ts" x="568" y="552" text-anchor="end">브랜치 끝 이동 · 132</text>
+<text class="mono c-purple" x="40" y="573">g</text>
+<text class="mono" x="60" y="573">keyword_index: add · login · feature</text>
+<text class="ts" x="568" y="573" text-anchor="end">검색 색인 · 134-136</text>
+<text class="mono" x="60" y="594">author_index['Alice'].append('af4e47c')</text>
+<text class="ts" x="568" y="594" text-anchor="end">작성자 색인 · 137</text>
+<rect class="green" x="24" y="624" width="560" height="52" rx="10"/>
+<text class="tb c-green" x="40" y="646">⑥ 출력</text>
+<text class="ts" x="40" y="665">main.py:312</text>
+<text class="mono" x="168" y="646">print(...)</text>
+<text class="mono" x="168" y="665">→ [feature af4e47c] Add login feature</text>
+<line class="ln ln-blue" x1="304" y1="134" x2="304" y2="149" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="304" y1="206" x2="304" y2="221" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="304" y1="278" x2="304" y2="293" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="304" y1="350" x2="304" y2="365" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="304" y1="606" x2="304" y2="621" marker-end="url(#arrow-blue)"/>
+<text class="ts c-red" x="608" y="142">잘못된 입력이면</text>
+<rect class="red" x="608" y="152" width="248" height="52" rx="10"/>
+<text class="mono c-red" x="622" y="174">Invalid args</text>
+<text class="ts" x="622" y="193">따옴표가 안 닫힘 (457-459)</text>
+<line class="ln ln-red dash" x1="586" y1="178" x2="604" y2="178" marker-end="url(#arrow-red)"/>
+<rect class="red" x="608" y="224" width="248" height="52" rx="10"/>
+<text class="mono c-red" x="622" y="246">Unknown command: …</text>
+<text class="ts" x="622" y="265">표에 없는 명령 (463-465)</text>
+<line class="ln ln-red dash" x1="586" y1="250" x2="604" y2="250" marker-end="url(#arrow-red)"/>
+<rect class="red" x="608" y="296" width="248" height="92" rx="10"/>
+<text class="mono c-red" x="622" y="318">Repository not initialized.</text>
+<text class="ts" x="622" y="337">INIT 전 (306 → 260-264)</text>
+<text class="mono c-red" x="622" y="356">Invalid args</text>
+<text class="ts" x="622" y="375">인자 수 ≠ 1 (308-310)</text>
+<line class="ln ln-red dash" x1="586" y1="322" x2="604" y2="322" marker-end="url(#arrow-red)"/>
+<text class="ts tb" x="608" y="440">색의 뜻</text>
+<rect class="blue" x="608" y="454" width="24" height="16" rx="4"/>
+<text class="ts" x="642" y="467">입력이 흘러가는 단계</text>
+<rect class="purple" x="608" y="480" width="24" height="16" rx="4"/>
+<text class="ts" x="642" y="493">저장소 상태를 바꾸는 단계</text>
+<rect class="green" x="608" y="506" width="24" height="16" rx="4"/>
+<text class="ts" x="642" y="519">화면 출력</text>
+<line class="ln ln-red dash" x1="608" y1="540" x2="634" y2="540" marker-end="url(#arrow-red)"/>
+<text class="ts" x="642" y="545">오류로 빠지는 길</text>
+<text class="ts" x="608" y="572">※ 값은 시계를 고정한 실측값.</text>
+<text class="ts" x="608" y="591">실제로 실행하면 시각과 해시가</text>
+<text class="ts" x="608" y="610">매번 달라진다.</text>
+</svg>

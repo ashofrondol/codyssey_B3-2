@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="460" viewBox="0 0 860 460" role="img" aria-labelledby="title desc">
+<title id="title">PATH 8690126 955b518 — 무방향 BFS 와 '부모 방향만'의 차이</title>
+<desc id="desc">왼쪽: 지금 구현은 부모 간선을 양방향으로 보고 BFS 한다. 8690126 에서 거리 1 af4e47c, 거리 2 112f66d, 거리 3 955b518 에 닿아 Path: 8690126-&gt;af4e47c-&gt;112f66d-&gt;955b518 을 낸다. 오른쪽: 부모 방향만 허용하면 8690126 에서 af4e47c, 112f66d 까지만 올라가고 옆 가지 955b518 로 내려갈 수 없어 No path 가 된다. 이때 경로는 후손에서 조상 방향으로만 생기고, 조상에서 후손으로 가는 방향도 No path 다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="860" height="460"/>
+<text x="24" y="36" class="th">PATH 8690126 955b518 — 무방향 BFS 와 "부모 방향만"의 차이</text>
+<text x="24" y="60" class="ts">파랑 = 출발·닿은 곳 · 초록 = 고른 경로·결과 · 빨강 = 닿을 수 없음</text>
+<rect class="zone" x="24" y="76" width="396" height="360" rx="12"/>
+<text x="40" y="100" class="ts">지금 구현: 간선을 양방향으로 (<tspan class="mono">main.py:177-178</tspan>)</text>
+<line class="ln ln-green" x1="110" y1="308" x2="110" y2="255" marker-end="url(#arrow-green)" style="stroke-width:2.4"/>
+<line class="ln ln-green" x1="136" y1="208" x2="188" y2="155" marker-end="url(#arrow-green)" style="stroke-width:2.4"/>
+<line class="ln ln-green" x1="256" y1="152" x2="306" y2="205" marker-end="url(#arrow-green)" style="stroke-width:2.4"/>
+<rect class="box" x="162.0" y="110.0" width="120" height="40" rx="8"/>
+<text x="222" y="135" class="mono" text-anchor="middle">112f66d</text>
+<rect class="box" x="50.0" y="210.0" width="120" height="40" rx="8"/>
+<text x="110" y="235" class="mono" text-anchor="middle">af4e47c</text>
+<rect class="green" x="274.0" y="210.0" width="120" height="40" rx="8"/>
+<text x="334" y="235" class="mono" text-anchor="middle">955b518</text>
+<rect class="blue" x="50.0" y="310.0" width="120" height="40" rx="8"/>
+<text x="110" y="335" class="mono" text-anchor="middle">8690126</text>
+<text x="292" y="135" class="ts">거리 2</text>
+<text x="180" y="235" class="ts">거리 1</text>
+<text x="334" y="270" class="ts c-green" text-anchor="middle">거리 3 (도착)</text>
+<text x="180" y="335" class="ts c-blue">거리 0 (출발)</text>
+<text x="40" y="380" class="ts">큐: <tspan class="mono">[8690126] → [af4e47c] → [112f66d] → [955b518]</tspan></text>
+<rect class="green" x="40" y="392" width="364" height="32" rx="8"/>
+<text x="222" y="413" class="mono tb c-green" text-anchor="middle">Path: 8690126-&gt;af4e47c-&gt;112f66d-&gt;955b518</text>
+<rect class="zone" x="440" y="76" width="396" height="360" rx="12"/>
+<text x="456" y="100" class="ts">만약 부모 방향만 허용한다면 (체크리스트 4-2)</text>
+<line class="ln" x1="526" y1="308" x2="526" y2="255" marker-end="url(#arrow)"/>
+<line class="ln" x1="552" y1="208" x2="604" y2="155" marker-end="url(#arrow)"/>
+<line class="ln" x1="722" y1="205" x2="672" y2="152" marker-end="url(#arrow)"/>
+<rect class="blue" x="578.0" y="110.0" width="120" height="40" rx="8"/>
+<text x="638" y="135" class="mono" text-anchor="middle">112f66d</text>
+<rect class="blue" x="466.0" y="210.0" width="120" height="40" rx="8"/>
+<text x="526" y="235" class="mono" text-anchor="middle">af4e47c</text>
+<rect class="red" x="690.0" y="210.0" width="120" height="40" rx="8"/>
+<text x="750" y="235" class="mono" text-anchor="middle">955b518</text>
+<rect class="blue" x="466.0" y="310.0" width="120" height="40" rx="8"/>
+<text x="526" y="335" class="mono" text-anchor="middle">8690126</text>
+<text x="708" y="135" class="ts c-blue">닿음</text>
+<text x="456" y="136" class="ts c-muted">화살표 방향으로만</text>
+<text x="456" y="154" class="ts c-muted">(자식 → 부모)</text>
+<text x="596" y="235" class="ts c-blue">닿음</text>
+<text x="750" y="270" class="ts c-red" text-anchor="middle">✗ 닿을 수 없음</text>
+<text x="596" y="335" class="ts c-blue">출발</text>
+<text x="456" y="380" class="ts">옆 가지(955b518)로 내려가는 길이 없다</text>
+<rect class="red" x="456" y="392" width="92" height="32" rx="8"/>
+<text x="502" y="413" class="mono tb c-red" text-anchor="middle">No path</text>
+<text x="562" y="413" class="ts">→ 후손→조상 방향으로만 경로가 생김</text>
+</svg>

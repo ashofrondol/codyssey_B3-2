@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="520" viewBox="0 0 860 520" role="img" aria-labelledby="title desc">
+<title id="title">병합 커밋이 있는 다이아몬드 — 동률 경로 고르기와 중복 없는 조상 탐색</title>
+<desc id="desc">테스트 데이터로 만든 다이아몬드 그래프(aaaaaa1 위, bbbbbb2·ccccc03 가운데, 병합 커밋 ddddd04 아래). 왼쪽은 PATH aaaaaa1 ddddd04 에서 길이 2인 두 경로 중 사전순으로 앞선 aaaaaa1->bbbbbb2->ddddd04 를 고르는 모습이고, 오른쪽은 ANCESTORS ddddd04 가 스택으로 조상을 찾을 때 두 길로 닿는 aaaaaa1 을 visited 로 한 번만 세어 3개를 얻는 과정이다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="860" height="520"/>
+
+<text class="th" x="24" y="36">병합 커밋이 있는 다이아몬드 — 동률 경로와 중복 없는 조상 탐색</text>
+<text class="ts" x="24" y="58">CLI 에는 MERGE 가 없어 테스트에서 직접 만든 그래프 (tests/test_minigit.py:160-166)</text>
+
+<!-- 왼쪽: PATH -->
+<rect class="zone" x="24" y="76" width="396" height="420" rx="12"/>
+<text class="mono tb" x="40" y="100">PATH aaaaaa1 ddddd04</text>
+
+<!-- 선 (화살촉 없음: 무방향으로 본다) -->
+<path class="ln ln-green" style="stroke-width:3.5" d="M162,136 L104,136 L104,184"/>
+<path class="ln ln-green" style="stroke-width:3.5" d="M104,232 L104,284 L162,284"/>
+<path class="ln dash" d="M282,136 L340,136 L340,184"/>
+<path class="ln dash" d="M340,232 L340,284 L282,284"/>
+
+<rect class="box" x="162" y="112" width="120" height="48" rx="10"/>
+<text class="mono tb" x="222" y="132" text-anchor="middle">aaaaaa1</text>
+<text class="ts" x="222" y="151" text-anchor="middle">root</text>
+
+<rect class="green" x="44" y="184" width="120" height="48" rx="10"/>
+<text class="mono tb c-green" x="104" y="204" text-anchor="middle">bbbbbb2</text>
+<text class="ts" x="104" y="223" text-anchor="middle">left</text>
+
+<rect class="box" x="280" y="184" width="120" height="48" rx="10"/>
+<text class="mono tb" x="340" y="204" text-anchor="middle">ccccc03</text>
+<text class="ts" x="340" y="223" text-anchor="middle">right</text>
+
+<rect class="box" x="162" y="260" width="120" height="48" rx="10"/>
+<text class="mono tb" x="222" y="280" text-anchor="middle">ddddd04</text>
+<text class="ts" x="222" y="299" text-anchor="middle">merge · 부모 2개</text>
+
+<text class="ts c-green" x="40" y="336">초록 굵은 선: aaaaaa1-&gt;bbbbbb2-&gt;ddddd04 ✓</text>
+<text class="ts" x="40" y="356">회색 점선: aaaaaa1-&gt;ccccc03-&gt;ddddd04</text>
+<text class="ts" x="40" y="376">둘 다 2걸음 → 10번째 글자 b &lt; c 라서 초록 쪽</text>
+
+<text class="mono" x="40" y="410">best[aaaaaa1] = aaaaaa1</text>
+<text class="mono" x="40" y="430">best[bbbbbb2] = aaaaaa1-&gt;bbbbbb2</text>
+<text class="mono" x="40" y="450">best[ccccc03] = aaaaaa1-&gt;ccccc03</text>
+<text class="mono tb c-green" x="40" y="474">best[ddddd04] = aaaaaa1-&gt;bbbbbb2-&gt;ddddd04</text>
+
+<!-- 오른쪽: ANCESTORS -->
+<rect class="zone" x="440" y="76" width="396" height="420" rx="12"/>
+<text class="tb" x="456" y="100"><tspan class="mono tb">ANCESTORS ddddd04</tspan> (스택 DFS)</text>
+
+<rect class="box" x="456" y="112" width="364" height="54" rx="8"/>
+<text class="ts" x="470" y="133">시작 — ddddd04 의 부모 둘을 스택에 넣음</text>
+<text class="mono" x="470" y="155">스택 [bbbbbb2, ccccc03]</text>
+
+<line class="ln" x1="638" y1="168" x2="638" y2="180" marker-end="url(#arrow)"/>
+
+<rect class="box" x="456" y="184" width="364" height="54" rx="8"/>
+<text class="ts" x="470" y="205">① ccccc03 꺼냄 → visited 추가, 부모 aaaaaa1 넣음</text>
+<text class="mono" x="470" y="227">스택 [bbbbbb2, aaaaaa1]</text>
+
+<line class="ln" x1="638" y1="240" x2="638" y2="252" marker-end="url(#arrow)"/>
+
+<rect class="box" x="456" y="256" width="364" height="54" rx="8"/>
+<text class="ts" x="470" y="277">② aaaaaa1 꺼냄 → visited 추가 (부모 없음)</text>
+<text class="mono" x="470" y="299">스택 [bbbbbb2]</text>
+
+<line class="ln" x1="638" y1="312" x2="638" y2="324" marker-end="url(#arrow)"/>
+
+<rect class="yellow" x="456" y="328" width="364" height="74" rx="8"/>
+<text class="ts" x="470" y="349">③ bbbbbb2 꺼냄 → visited 추가</text>
+<text class="ts" x="470" y="369">부모 aaaaaa1 은 이미 visited → 넣지 않음</text>
+<text class="mono" x="470" y="391">스택 []</text>
+
+<line class="ln" x1="638" y1="404" x2="638" y2="416" marker-end="url(#arrow)"/>
+
+<rect class="green" x="456" y="420" width="364" height="60" rx="8"/>
+<text class="mono tb c-green" x="470" y="443">{aaaaaa1, bbbbbb2, ccccc03}</text>
+<text class="ts" x="470" y="467">3개, 중복 없음 → (timestamp, hash) 로 정렬해 출력</text>
+</svg>

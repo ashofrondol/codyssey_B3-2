@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="560" viewBox="0 0 860 560" role="img" aria-labelledby="title desc">
+<title id="title">머지 정렬 — 반씩 나누고, 합칠 때 같으면 왼쪽 먼저</title>
+<desc id="desc">(3,a) (1,b) (3,c) (2,d) (1,e) 다섯 개를 숫자 기준으로 머지 정렬하는 과정. 위쪽 네 줄은 리스트를 반씩 나누고, 아래쪽 세 줄은 두 리스트를 합친다. 마지막 합치기에서 값이 같은 (1,b)·(1,e) 와 (3,a)·(3,c) 는 main.py:48 의 &lt;= 비교 때문에 왼쪽(원래 앞에 있던 것)이 먼저 나와 원래 순서가 유지된다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="860" height="560"/>
+
+<text class="th" x="24" y="36">머지 정렬 — 반씩 나누고, 합칠 때 같으면 왼쪽 먼저</text>
+<text class="ts" x="836" y="36" text-anchor="end">평균·최악 O(n log n) · 추가 메모리 O(n) · 안정</text>
+<text class="ts" x="24" y="60">칸 하나 = (정렬 기준 숫자, 이름표) · 붙어 있는 칸 = 한 리스트 · 숫자만 보고 정렬한다</text>
+
+<!-- 왼쪽 여백 라벨 -->
+<line class="ln" x1="100" y1="84" x2="100" y2="298" marker-end="url(#arrow)"/>
+<text class="tb" x="24" y="196">나누기</text>
+<line class="ln" x1="100" y1="340" x2="100" y2="490" marker-end="url(#arrow)"/>
+<text class="tb" x="24" y="420">합치기</text>
+
+<line class="ln" x1="197" y1="110" x2="194" y2="140" marker-end="url(#arrow)"/>
+<line class="ln" x1="357" y1="110" x2="392" y2="140" marker-end="url(#arrow)"/>
+<line class="ln" x1="162" y1="174" x2="152" y2="204" marker-end="url(#arrow)"/>
+<line class="ln" x1="226" y1="174" x2="236" y2="204" marker-end="url(#arrow)"/>
+<line class="ln" x1="328" y1="174" x2="332" y2="204" marker-end="url(#arrow)"/>
+<line class="ln" x1="424" y1="174" x2="452" y2="204" marker-end="url(#arrow)"/>
+<line class="ln" x1="420" y1="238" x2="404" y2="268" marker-end="url(#arrow)"/>
+<line class="ln" x1="484" y1="238" x2="500" y2="268" marker-end="url(#arrow)"/>
+<line class="ln" x1="152" y1="238" x2="194" y2="332" marker-end="url(#arrow)"/>
+<line class="ln" x1="236" y1="238" x2="194" y2="332" marker-end="url(#arrow)"/>
+<line class="ln" x1="332" y1="238" x2="332" y2="332" marker-end="url(#arrow)"/>
+<line class="ln" x1="404" y1="302" x2="452" y2="332" marker-end="url(#arrow)"/>
+<line class="ln" x1="500" y1="302" x2="452" y2="332" marker-end="url(#arrow)"/>
+<line class="ln" x1="194" y1="366" x2="194" y2="396" marker-end="url(#arrow)"/>
+<line class="ln" x1="332" y1="366" x2="392" y2="396" marker-end="url(#arrow)"/>
+<line class="ln" x1="452" y1="366" x2="392" y2="396" marker-end="url(#arrow)"/>
+<line class="ln" x1="194" y1="430" x2="293" y2="460" marker-end="url(#arrow)"/>
+<line class="ln" x1="392" y1="430" x2="293" y2="460" marker-end="url(#arrow)"/>
+<rect class="green" x="127" y="458" width="332" height="42" rx="6"/>
+<rect class="box" x="133" y="80" width="64" height="30"/>
+<text class="mono" x="165" y="100" text-anchor="middle">(3,a)</text>
+<rect class="box" x="197" y="80" width="64" height="30"/>
+<text class="mono" x="229" y="100" text-anchor="middle">(1,b)</text>
+<rect class="box" x="261" y="80" width="64" height="30"/>
+<text class="mono" x="293" y="100" text-anchor="middle">(3,c)</text>
+<rect class="box" x="325" y="80" width="64" height="30"/>
+<text class="mono" x="357" y="100" text-anchor="middle">(2,d)</text>
+<rect class="box" x="389" y="80" width="64" height="30"/>
+<text class="mono" x="421" y="100" text-anchor="middle">(1,e)</text>
+<rect class="box" x="130" y="144" width="64" height="30"/>
+<text class="mono" x="162" y="164" text-anchor="middle">(3,a)</text>
+<rect class="box" x="194" y="144" width="64" height="30"/>
+<text class="mono" x="226" y="164" text-anchor="middle">(1,b)</text>
+<rect class="box" x="296" y="144" width="64" height="30"/>
+<text class="mono" x="328" y="164" text-anchor="middle">(3,c)</text>
+<rect class="box" x="360" y="144" width="64" height="30"/>
+<text class="mono" x="392" y="164" text-anchor="middle">(2,d)</text>
+<rect class="box" x="424" y="144" width="64" height="30"/>
+<text class="mono" x="456" y="164" text-anchor="middle">(1,e)</text>
+<rect class="box" x="120" y="208" width="64" height="30"/>
+<text class="mono" x="152" y="228" text-anchor="middle">(3,a)</text>
+<rect class="box" x="204" y="208" width="64" height="30"/>
+<text class="mono" x="236" y="228" text-anchor="middle">(1,b)</text>
+<rect class="box" x="300" y="208" width="64" height="30"/>
+<text class="mono" x="332" y="228" text-anchor="middle">(3,c)</text>
+<rect class="box" x="388" y="208" width="64" height="30"/>
+<text class="mono" x="420" y="228" text-anchor="middle">(2,d)</text>
+<rect class="box" x="452" y="208" width="64" height="30"/>
+<text class="mono" x="484" y="228" text-anchor="middle">(1,e)</text>
+<rect class="box" x="372" y="272" width="64" height="30"/>
+<text class="mono" x="404" y="292" text-anchor="middle">(2,d)</text>
+<rect class="box" x="468" y="272" width="64" height="30"/>
+<text class="mono" x="500" y="292" text-anchor="middle">(1,e)</text>
+<rect class="box" x="130" y="336" width="64" height="30"/>
+<text class="mono" x="162" y="356" text-anchor="middle">(1,b)</text>
+<rect class="box" x="194" y="336" width="64" height="30"/>
+<text class="mono" x="226" y="356" text-anchor="middle">(3,a)</text>
+<rect class="box" x="300" y="336" width="64" height="30"/>
+<text class="mono" x="332" y="356" text-anchor="middle">(3,c)</text>
+<rect class="box" x="388" y="336" width="64" height="30"/>
+<text class="mono" x="420" y="356" text-anchor="middle">(1,e)</text>
+<rect class="box" x="452" y="336" width="64" height="30"/>
+<text class="mono" x="484" y="356" text-anchor="middle">(2,d)</text>
+<rect class="box" x="130" y="400" width="64" height="30"/>
+<text class="mono" x="162" y="420" text-anchor="middle">(1,b)</text>
+<rect class="box" x="194" y="400" width="64" height="30"/>
+<text class="mono" x="226" y="420" text-anchor="middle">(3,a)</text>
+<rect class="box" x="296" y="400" width="64" height="30"/>
+<text class="mono" x="328" y="420" text-anchor="middle">(1,e)</text>
+<rect class="box" x="360" y="400" width="64" height="30"/>
+<text class="mono" x="392" y="420" text-anchor="middle">(2,d)</text>
+<rect class="box" x="424" y="400" width="64" height="30"/>
+<text class="mono" x="456" y="420" text-anchor="middle">(3,c)</text>
+<rect class="yellow" x="133" y="464" width="64" height="30"/>
+<text class="mono" x="165" y="484" text-anchor="middle">(1,b)</text>
+<rect class="yellow" x="197" y="464" width="64" height="30"/>
+<text class="mono" x="229" y="484" text-anchor="middle">(1,e)</text>
+<rect class="green" x="261" y="464" width="64" height="30"/>
+<text class="mono tb c-green" x="293" y="484" text-anchor="middle">(2,d)</text>
+<rect class="yellow" x="325" y="464" width="64" height="30"/>
+<text class="mono" x="357" y="484" text-anchor="middle">(3,a)</text>
+<rect class="yellow" x="389" y="464" width="64" height="30"/>
+<text class="mono" x="421" y="484" text-anchor="middle">(3,c)</text>
+
+<text class="ts" x="197" y="524" text-anchor="middle">1 &lt;= 1 → 왼쪽 (1,b) 먼저</text>
+<text class="ts" x="389" y="524" text-anchor="middle">3 &lt;= 3 → 왼쪽 (3,a) 먼저</text>
+
+<!-- 범례 -->
+<rect class="yellow" x="584" y="92" width="18" height="18" rx="3"/>
+<text class="ts" x="612" y="106">값이 같아 왼쪽이 먼저 내려온 칸</text>
+<rect class="green" x="584" y="120" width="18" height="18" rx="3"/>
+<text class="ts" x="612" y="134">최종 결과</text>
+<line class="ln" x1="584" y1="157" x2="602" y2="157"/>
+<text class="ts" x="612" y="162">나누기·합치기 연결</text>
+
+<!-- 입력 → 결과 요약 -->
+<text class="ts" x="584" y="232">입력 (원래 순서)</text>
+<text class="mono" x="584" y="254">(3,a) (1,b) (3,c) (2,d) (1,e)</text>
+<text class="ts" x="584" y="290">결과</text>
+<text class="mono tb c-green" x="584" y="312">(1,b) (1,e) (2,d) (3,a) (3,c)</text>
+<text class="ts" x="584" y="336">숫자가 같은 칸: b 는 e 보다, a 는 c 보다 앞</text>
+<text class="ts" x="584" y="356">원래 순서 그대로 = 안정 정렬</text>
+
+<rect class="orange" x="560" y="440" width="276" height="80" rx="10"/>
+<text class="ts c-orange" x="576" y="464">main.py:48 의 &lt;= 를 &lt; 로 바꾸면</text>
+<text class="ts" x="576" y="485">(1,e) 가 (1,b) 보다 먼저 → 안정성 깨짐</text>
+<text class="ts" x="576" y="506">테스트 3건 실패 (돌연변이 실측)</text>
+</svg>

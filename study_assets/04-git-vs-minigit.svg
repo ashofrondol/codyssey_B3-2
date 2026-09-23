@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="600" viewBox="0 0 860 600" role="img" aria-labelledby="title desc">
+<title id="title">실제 git 과 Mini Git — 같은 이력, 같은 구조, 다른 ID 계산</title>
+<desc id="desc">같은 모양의 커밋 이력을 실제 git(왼쪽)과 Mini Git(오른쪽)에 만들어 나란히 놓았다. .git/HEAD → refs/heads/feature → 커밋 오브젝트 → parent 사슬이 head_branch → branches → commits → parents 와 한 줄씩 대응한다. 맨 아래 ID 계산만 다르다: git 은 부모 ID 를 포함한 본문 전체를 SHA-1 하고, Mini Git 은 카운터·작성자·메시지·시각만 SHA-1 해서 앞 7자리를 쓴다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="860" height="600"/>
+<text x="24" y="36" class="th">실제 git 과 Mini Git — 같은 이력, 같은 구조, 다른 ID 계산</text>
+<text x="24" y="60" class="ts">보라 = 데이터 · 파란 화살표 = 가리킴 · 회색 점선 = 서로 대응 · 주황 = git 과 다른 점</text>
+<text x="218.0" y="96" class="th" text-anchor="middle">실제 git — .git 폴더 (디스크)</text>
+<text x="642.0" y="96" class="th" text-anchor="middle">Mini Git — Repository (메모리)</text>
+<rect class="box" x="24" y="112" width="388" height="52" rx="10"/>
+<text x="398" y="134" class="ts c-muted" text-anchor="end">① HEAD</text>
+<text x="40" y="134" class="mono tb" xml:space="preserve">.git/HEAD</text>
+<text x="40" y="154" class="mono" xml:space="preserve">ref: refs/heads/feature</text>
+<rect class="purple" x="448" y="112" width="388" height="52" rx="10"/>
+<text x="822" y="134" class="ts c-muted" text-anchor="end">① HEAD</text>
+<text x="464" y="134" class="mono tb c-purple" xml:space="preserve">head_branch</text>
+<text x="464" y="154" class="mono" xml:space="preserve">'feature'</text>
+<rect class="box" x="24" y="200" width="388" height="52" rx="10"/>
+<text x="398" y="222" class="ts c-muted" text-anchor="end">② 브랜치</text>
+<text x="40" y="222" class="mono tb" xml:space="preserve">.git/refs/heads/feature</text>
+<text x="40" y="242" class="mono" xml:space="preserve">739ca9a47e079f970a33e978993d4aafaa257bd2</text>
+<rect class="purple" x="448" y="200" width="388" height="52" rx="10"/>
+<text x="822" y="222" class="ts c-muted" text-anchor="end">② 브랜치</text>
+<text x="464" y="222" class="mono tb c-purple" xml:space="preserve">branches['feature']</text>
+<text x="464" y="242" class="mono" xml:space="preserve">'8690126'</text>
+<rect class="purple" x="24" y="288" width="388" height="116" rx="10"/>
+<text x="398" y="310" class="ts c-muted" text-anchor="end">③ 커밋</text>
+<text x="40" y="310" class="mono" xml:space="preserve">tree 4b825dc642cb…</text>
+<text x="40" y="330" class="mono" xml:space="preserve">parent 426a67b6872b…</text>
+<text x="40" y="350" class="mono" xml:space="preserve">author Alice … 1705311900 +0000</text>
+<text x="40" y="370" class="mono" xml:space="preserve">committer Alice … 1705311900 +0000</text>
+<text x="40" y="390" class="mono" xml:space="preserve">Fix login bug</text>
+<rect class="purple" x="448" y="288" width="388" height="116" rx="10"/>
+<text x="822" y="310" class="ts c-muted" text-anchor="end">③ 커밋</text>
+<text x="464" y="310" class="mono tb c-purple" xml:space="preserve">commits['8690126']</text>
+<text x="464" y="330" class="mono" xml:space="preserve">parents   = ['af4e47c']</text>
+<text x="464" y="350" class="mono" xml:space="preserve">author    = 'Alice'</text>
+<text x="464" y="370" class="mono" xml:space="preserve">timestamp = 1705311900.0</text>
+<text x="464" y="390" class="mono" xml:space="preserve">message   = 'Fix login bug'</text>
+<text x="40" y="424" class="ts">parent → <tspan class="mono">426a67b…</tspan> (Add login feature)</text>
+<text x="464" y="424" class="ts">parents → <tspan class="mono">af4e47c</tspan> (Add login feature)</text>
+<rect class="box" x="24" y="440" width="388" height="116" rx="10"/>
+<text x="398" y="462" class="ts c-muted" text-anchor="end">④ ID 계산</text>
+<text x="40" y="462" class="ts">ID = SHA-1(</text>
+<text x="60" y="482" class="mono">"commit 212\0" + 위 5줄</text>
+<text x="40" y="502" class="ts" xml:space="preserve">)  →  <tspan class="mono tb">739ca9a…</tspan></text>
+<text x="40" y="524" class="ts">부모 ID 도 재료에 들어감 → 과거를 고치면</text>
+<text x="40" y="542" class="ts">그 뒤 커밋 ID 가 전부 바뀜</text>
+<rect class="orange" x="448" y="440" width="388" height="116" rx="10"/>
+<text x="822" y="462" class="ts c-muted" text-anchor="end">④ ID 계산</text>
+<text x="464" y="462" class="ts">ID = SHA-1(</text>
+<text x="484" y="482" class="mono">"4|Alice|Fix login bug|1705311900.0"</text>
+<text x="464" y="502" class="ts" xml:space="preserve">)[:7]  →  <tspan class="mono tb">8690126</tspan></text>
+<text x="464" y="524" class="ts c-orange">부모 ID 없음 · 시각 포함</text>
+<text x="464" y="542" class="ts c-orange">→ 실행할 때마다 ID 가 달라짐</text>
+<line class="ln ln-blue" x1="84" y1="167" x2="84" y2="196" marker-end="url(#arrow-blue)"/>
+<text x="96" y="186.5" class="ts c-blue">가리킴</text>
+<line class="ln ln-blue" x1="84" y1="255" x2="84" y2="284" marker-end="url(#arrow-blue)"/>
+<text x="96" y="274.5" class="ts c-blue">가리킴</text>
+<line class="ln ln-blue" x1="508" y1="167" x2="508" y2="196" marker-end="url(#arrow-blue)"/>
+<text x="520" y="186.5" class="ts c-blue">가리킴</text>
+<line class="ln ln-blue" x1="508" y1="255" x2="508" y2="284" marker-end="url(#arrow-blue)"/>
+<text x="520" y="274.5" class="ts c-blue">가리킴</text>
+<line class="ln dash" x1="416" y1="144.0" x2="444" y2="144.0" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<text x="430.0" y="134.0" class="ts" text-anchor="middle">대응</text>
+<line class="ln dash" x1="416" y1="232.0" x2="444" y2="232.0" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<text x="430.0" y="222.0" class="ts" text-anchor="middle">대응</text>
+<line class="ln dash" x1="416" y1="352.0" x2="444" y2="352.0" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<text x="430.0" y="342.0" class="ts" text-anchor="middle">대응</text>
+<line class="ln dash" x1="416" y1="504.0" x2="444" y2="504.0" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<text x="430.0" y="494.0" class="ts" text-anchor="middle">대응</text>
+<text x="430.0" y="584" class="ts" text-anchor="middle">같은 모양·같은 시각으로 만든 이력이지만 ID 재료가 달라 값이 다르다 (git 2.55 실측)</text>
+</svg>

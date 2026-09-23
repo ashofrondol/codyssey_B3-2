@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="600" viewBox="0 0 860 600" role="img" aria-labelledby="title desc">
+<title id="title">LOG 의 Kahn 위상 정렬 — 한 단계씩</title>
+<desc id="desc">CANON 커밋 4개로 LOG 의 Kahn 위상 정렬을 손으로 따라간다. 화살표는 parents 를 뒤집은 children(부모 → 자식) 방향이다. 부모를 모두 내보낸(진입차수 0) 커밋만 후보(ready)에 오르고, 후보가 여럿이면 (timestamp, hash) 가 가장 작은 것을 꺼낸다. 결과 112f66d → af4e47c → 955b518 → 8690126 은 최신순과 달리 부모가 항상 먼저 나온다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="860" height="600"/>
+<text x="24" y="36" class="th">LOG 의 Kahn 위상 정렬 — 한 단계씩</text>
+<text x="836" y="36" class="ts" text-anchor="end">후보가 여럿이면 (timestamp, hash) 가 가장 작은 것 — <tspan class="mono">main.py:149-154</tspan></text>
+<text x="24" y="60" class="ts">진입 = 아직 출력되지 않은 부모 수 · 노랑 = 그 단계에서 꺼낸 커밋 · 초록 = 최종 LOG 순서</text>
+<line class="ln" x1="179" y1="146" x2="331" y2="110" marker-end="url(#arrow)"/>
+<line class="ln" x1="179" y1="162" x2="331" y2="194" marker-end="url(#arrow)"/>
+<line class="ln" x1="459" y1="106" x2="611" y2="106" marker-end="url(#arrow)"/>
+<rect class="box" x="56" y="128" width="120" height="52" rx="10"/>
+<text x="116.0" y="150" class="mono" text-anchor="middle">112f66d</text>
+<text x="116.0" y="170" class="ts" text-anchor="middle">09:00 · 진입 0</text>
+<rect class="box" x="336" y="80" width="120" height="52" rx="10"/>
+<text x="396.0" y="102" class="mono" text-anchor="middle">af4e47c</text>
+<text x="396.0" y="122" class="ts" text-anchor="middle">09:15 · 진입 1</text>
+<rect class="box" x="336" y="172" width="120" height="52" rx="10"/>
+<text x="396.0" y="194" class="mono" text-anchor="middle">955b518</text>
+<text x="396.0" y="214" class="ts" text-anchor="middle">09:30 · 진입 1</text>
+<rect class="box" x="616" y="80" width="120" height="52" rx="10"/>
+<text x="676.0" y="102" class="mono" text-anchor="middle">8690126</text>
+<text x="676.0" y="122" class="ts" text-anchor="middle">09:45 · 진입 1</text>
+<text x="520" y="188" class="ts">children (부모 → 자식)</text>
+<text x="520" y="208" class="ts c-muted">parents 화살표를 뒤집은 방향</text>
+<rect class="box" x="24" y="240" width="812" height="46" rx="6"/>
+<text x="36" y="267" class="tb">단계</text>
+<text x="88" y="260" class="tb">ready</text>
+<text x="88" y="278" class="ts">지금 내보낼 수 있는 후보</text>
+<text x="272" y="267" class="tb">꺼낸 것</text>
+<text x="500" y="267" class="tb">진입차수 변화</text>
+<text x="50" y="311.0" class="ts" text-anchor="middle">시작</text>
+<text x="88" y="311.0" class="mono">[112f66d]</text>
+<text x="272" y="311.0" class="ts">—</text>
+<text x="500" y="311.0" class="ts">112f66d:0, af4e47c:1, 955b518:1, 8690126:1</text>
+<text x="50" y="351.0" class="tb" text-anchor="middle">①</text>
+<text x="88" y="351.0" class="mono">[112f66d]</text>
+<rect class="yellow" x="270" y="331" width="76" height="30" rx="6"/>
+<text x="308" y="351.0" class="mono" text-anchor="middle">112f66d</text>
+<text x="500" y="351.0" class="ts">af4e47c 1→0, 955b518 1→0 → 후보에 추가</text>
+<text x="50" y="391.0" class="tb" text-anchor="middle">②</text>
+<text x="88" y="391.0" class="mono">[af4e47c, 955b518]</text>
+<rect class="yellow" x="270" y="371" width="76" height="30" rx="6"/>
+<text x="308" y="391.0" class="mono" text-anchor="middle">af4e47c</text>
+<text x="354" y="391.0" class="ts">(09:15 &lt; 09:30)</text>
+<text x="500" y="391.0" class="ts">8690126 1→0 → 후보에 추가</text>
+<text x="50" y="431.0" class="tb" text-anchor="middle">③</text>
+<text x="88" y="431.0" class="mono">[955b518, 8690126]</text>
+<rect class="yellow" x="270" y="411" width="76" height="30" rx="6"/>
+<text x="308" y="431.0" class="mono" text-anchor="middle">955b518</text>
+<text x="354" y="431.0" class="ts">(09:30 &lt; 09:45)</text>
+<text x="500" y="431.0" class="ts">자식 없음</text>
+<text x="50" y="471.0" class="tb" text-anchor="middle">④</text>
+<text x="88" y="471.0" class="mono">[8690126]</text>
+<rect class="yellow" x="270" y="451" width="76" height="30" rx="6"/>
+<text x="308" y="471.0" class="mono" text-anchor="middle">8690126</text>
+<text x="500" y="471.0" class="ts">자식 없음 → 후보가 비어 끝</text>
+<rect x="24" y="240" width="812" height="246" rx="6" style="fill:none" class="ln"/>
+<line class="ln" x1="24" y1="326" x2="836" y2="326" style="stroke-width:0.8"/>
+<line class="ln" x1="24" y1="366" x2="836" y2="366" style="stroke-width:0.8"/>
+<line class="ln" x1="24" y1="406" x2="836" y2="406" style="stroke-width:0.8"/>
+<line class="ln" x1="24" y1="446" x2="836" y2="446" style="stroke-width:0.8"/>
+<line class="ln" x1="76" y1="240" x2="76" y2="486" style="stroke-width:0.8"/>
+<line class="ln" x1="260" y1="240" x2="260" y2="486" style="stroke-width:0.8"/>
+<line class="ln" x1="488" y1="240" x2="488" y2="486" style="stroke-width:0.8"/>
+<rect class="green" x="24" y="500" width="812" height="34" rx="8"/>
+<text x="40" y="522" class="tb c-green">LOG 출력 (부모 먼저)</text>
+<text x="236" y="522" class="mono tb">112f66d → af4e47c → 955b518 → 8690126</text>
+<rect class="box" x="24" y="542" width="812" height="34" rx="8"/>
+<text x="40" y="564" class="tb">최신순이었다면</text>
+<text x="236" y="564" class="mono">8690126 → 955b518 → af4e47c → 112f66d</text>
+<text x="548" y="564" class="ts c-muted">← 자식이 부모보다 먼저 나와 요구사항 위반</text>
+</svg>

@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="480" viewBox="0 0 880 480" role="img" aria-labelledby="title desc">
+<title id="title">Mini Git 한눈에 보기 — 명령 한 줄이 지나가는 층</title>
+<desc id="desc">사용자가 mini-git&gt; 프롬프트에 친 명령 한 줄은 main.py 안에서 입력·파싱(parse_line), 명령 찾기(COMMANDS), 명령 처리(cmd_* 8개)를 차례로 지나 화면에 출력된다. 명령 처리는 메모리 속 Repository 데이터와 값을 돌려주는 알고리즘 함수들을 호출한다. 잘못된 입력은 어느 단계에서든 프로그램을 죽이지 않고 정해진 오류 문구로 끝난다. 입력·파싱에서 따옴표가 안 닫히면 Invalid args, 명령 찾기에서 없는 명령이면 Unknown command, 명령 처리에서 인자가 틀리면 Invalid args, Unknown branch, Unknown commit 이다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="480"/>
+<text x="24" y="36" class="th">Mini Git 한눈에 보기 — 명령 한 줄이 지나가는 층</text>
+<text x="24" y="58" class="ts">파랑 = 정상 흐름 · 보라 = 메모리 속 데이터 · 초록 = 출력 · 빨강 = 오류 문구</text>
+<rect class="zone" x="144" y="76" width="496" height="380" rx="12"/>
+<text x="160" y="98" class="ts">main.py — 메모리 안에서만 동작 (종료하면 사라짐)</text>
+<rect class="box" x="24" y="112" width="96" height="72" rx="10"/>
+<text x="72" y="142" text-anchor="middle" class="tb">사용자</text>
+<text x="72" y="164" text-anchor="middle" class="mono">mini-git&gt;</text>
+<rect class="blue" x="160" y="112" width="136" height="72" rx="10"/>
+<text x="228" y="134" text-anchor="middle" class="tb c-blue">① 입력·파싱</text>
+<text x="228" y="155" text-anchor="middle" class="mono">parse_line()</text>
+<text x="228" y="175" text-anchor="middle" class="ts">shlex: 따옴표 처리</text>
+<rect class="blue" x="320" y="112" width="120" height="72" rx="10"/>
+<text x="380" y="134" text-anchor="middle" class="tb c-blue">② 명령 찾기</text>
+<text x="380" y="155" text-anchor="middle" class="mono">COMMANDS</text>
+<text x="380" y="175" text-anchor="middle" class="ts">대소문자 무시</text>
+<rect class="blue" x="464" y="112" width="160" height="72" rx="10"/>
+<text x="544" y="134" text-anchor="middle" class="tb c-blue">③ 명령 처리</text>
+<text x="544" y="155" text-anchor="middle" class="mono">cmd_* (8개)</text>
+<text x="544" y="175" text-anchor="middle" class="ts">인자 검사·출력 문구</text>
+<rect class="purple" x="160" y="240" width="252" height="200" rx="10"/>
+<text x="176" y="266" class="tb c-purple">④ Repository — 데이터</text>
+<text x="176" y="296" class="mono">commits</text>
+<text x="284" y="296" class="mono">hash → Commit</text>
+<text x="176" y="320" class="mono">children</text>
+<text x="284" y="320" class="mono">hash → [child]</text>
+<text x="176" y="344" class="mono">branches</text>
+<text x="284" y="344" class="mono">name → hash</text>
+<text x="176" y="368" class="mono">head_branch</text>
+<text x="284" y="368" class="mono">'feature'</text>
+<text x="176" y="392" class="mono">author</text>
+<text x="284" y="392" class="mono">'Alice'</text>
+<text x="176" y="416" class="mono">keyword_index · author_index</text>
+<rect class="box" x="456" y="240" width="168" height="200" rx="10"/>
+<text x="540" y="266" text-anchor="middle" class="tb">⑤ 알고리즘 (값만 반환)</text>
+<text x="540" y="290" text-anchor="middle" class="ts">Kahn·BFS·DFS·정렬·색인</text>
+<text x="472" y="320" class="mono">topological_log()</text>
+<text x="472" y="344" class="mono">shortest_path()</text>
+<text x="472" y="368" class="mono">ancestors()</text>
+<text x="472" y="392" class="mono">merge_sort()</text>
+<text x="472" y="416" class="mono">search_keyword()</text>
+<rect class="green" x="688" y="112" width="168" height="72" rx="10"/>
+<text x="772" y="134" text-anchor="middle" class="tb c-green">⑥ 출력</text>
+<text x="772" y="155" text-anchor="middle" class="mono">[feature af4e47c]</text>
+<text x="772" y="175" text-anchor="middle" class="ts">Add login feature</text>
+<rect class="red" x="688" y="232" width="168" height="104" rx="10"/>
+<text x="772" y="256" text-anchor="middle" class="tb c-red">③ 인자·대상이 틀리면</text>
+<text x="704" y="282" class="mono">Invalid args</text>
+<text x="704" y="304" class="mono">Unknown branch: …</text>
+<text x="704" y="326" class="mono">Unknown commit: …</text>
+<line class="ln ln-blue" x1="120" y1="148" x2="156" y2="148" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="296" y1="148" x2="316" y2="148" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="440" y1="148" x2="460" y2="148" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="624" y1="148" x2="684" y2="148" marker-end="url(#arrow-blue)"/>
+<text x="664" y="140" text-anchor="middle" class="ts c-blue">print</text>
+<line class="ln ln-blue" x1="512" y1="186" x2="512" y2="236" marker-end="url(#arrow-blue)"/>
+<rect class="bg" x="494" y="197" width="36" height="28"/>
+<text x="512" y="217" text-anchor="middle" class="ts c-blue">호출</text>
+<line class="ln ln-green" x1="584" y1="238" x2="584" y2="188" marker-end="url(#arrow-green)"/>
+<rect class="bg" x="556" y="197" width="56" height="28"/>
+<text x="584" y="217" text-anchor="middle" class="ts c-green">값 반환</text>
+<line class="ln ln-purple" x1="416" y1="344" x2="452" y2="344" marker-start="url(#arrow-purple)" marker-end="url(#arrow-purple)"/>
+<text x="434" y="332" text-anchor="middle" class="ts c-purple">읽기</text>
+<text x="434" y="366" text-anchor="middle" class="ts c-purple">쓰기</text>
+<path class="ln ln-red dash" d="M624,172 L672,172 L672,284 L684,284" marker-end="url(#arrow-red)"/>
+<rect class="bg" x="648" y="186" width="48" height="43"/>
+<text x="672" y="204" text-anchor="middle" class="ts c-red">잘못된</text>
+<text x="672" y="221" text-anchor="middle" class="ts c-red">인자</text>
+<text x="228" y="206" text-anchor="middle" class="ts c-red">따옴표가 안 닫히면</text>
+<text x="228" y="226" text-anchor="middle" class="mono c-red">Invalid args</text>
+<text x="380" y="206" text-anchor="middle" class="ts c-red">없는 명령이면</text>
+<text x="380" y="226" text-anchor="middle" class="mono c-red">Unknown command: …</text>
+</svg>

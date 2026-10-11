@@ -2,6 +2,205 @@
 
 학습용 CLI 기반 미니 버전관리 시스템. 커밋 그래프(DAG), 브랜치, HEAD, 역색인 검색, 직접 구현한 정렬을 메모리상에서 동작시킵니다.
 
+> **읽는 순서.** 처음이면 아래 「빠른 시작」만 보면 실행된다. 과제 명세(과제 설명서의 요구사항) 원문과 긴 해설은 맨 뒤 「0. 과제 명세」로 옮겨 두었다. 더 깊은 학습·발표 대비는 `STUDY.md`, 문서 지도와 첫 30분 안내는 `START-HERE.md` 를 본다. 낯선 말은 `STUDY.md` 부록 A 용어집에 있다.
+
+## 빠른 시작
+
+### 환경
+
+- Python 3.10 이상. 표준 라이브러리만 쓰므로 설치할 것이 없다. 이 머신의 `python3` 는 3.12.3 이고, 그 버전으로 테스트 70개가 통과하는 것을 확인했다.
+- 이 환경에는 `python` 명령이 없어 `python3` 를 쓴다. 평가 PC 에 `python` 이 있으면 `python main.py` 로 실행하면 된다.
+- 데이터는 메모리에만 저장되며 종료하면 사라진다.
+
+### 실행 (3단계)
+
+1. `python3 main.py` — `mini-git>` 프롬프트가 뜬다.
+2. `init "Alice"` → `commit "Initial commit"` → `log` — 첫 커밋이 보이면 정상.
+3. `exit` 또는 `quit` — 종료.
+
+### 필수 명령
+
+명령 11개(명령 8개 + 옵션 2개 + 종료어)의 전체 목록과 설명은 아래 「지원 명령」 절 한 곳에 있다. 전체 사용 예시는 「사용 예시」 절에 있다.
+
+### 최종 산출물 체크리스트
+
+- [ ] 엔트리 포인트 파일 1개 (예: `main.py`)
+- [ ] `README.md` 1개
+- [ ] `python main.py` 로 실행되어 `mini-git>` 프롬프트가 뜨는 것
+- [ ] 위 요구사항 1~4의 모든 명령(아래 「지원 명령」표)이 정상 동작하는 것
+
+> PDF 가 요구하는 제출물은 **엔트리 포인트 1개 + README.md 1개**가 전부다. 모듈을 여러 파일로 나누는 것은 금지되지 않았지만, **`python main.py` 한 줄로 실행 가능해야 한다**는 조건은 유지해야 한다. 원문 체크리스트는 맨 뒤 「0.2」에 그대로 있다.
+
+### 테스트 (한 줄)
+
+`python3 -m unittest discover -s tests` → 70개 통과(약 0.4초). 자세한 것은 아래 「테스트」 절.
+
+## 실행
+
+```
+python3 main.py      # 이 머신: python 명령이 없다
+python main.py       # 평가 PC: python 이 있으면 그대로
+```
+
+`mini-git>` 프롬프트가 뜨면 명령을 입력하고, `exit` 또는 `quit`으로 종료합니다.
+
+> Python 3.10+ 필요. 표준 라이브러리만 사용합니다. 데이터는 메모리에만 저장되며 종료 시 사라집니다.
+
+## 테스트
+
+요구사항은 README 의 ✅ 표가 아니라 **실행되는 검사**가 지킨다.
+표준 라이브러리 `unittest` 로만 작성돼 있어 설치할 것이 없다.
+
+```
+python3 -m unittest discover -s tests
+```
+
+`pytest` 가 설치돼 있으면 `pytest -q` 로도 같은 검사가 돈다(`pyproject.toml` 에 설정).
+
+| 파일 | 고정하는 불변식 |
+| --- | --- |
+| `tests/test_minigit.py` | 위상 정렬(부모가 자식보다 먼저), 최단 경로(간선 수 최소 → 동률이면 사전순 최소), 머지 정렬 **안정성**, 역색인 결과 == 전체 순회 결과 |
+| `tests/test_cli.py` | `main.py` 를 인터프리터에 넘기면 REPL 이 실제로 뜨고, 잘못된 입력 12종에도 죽지 않는다 |
+| `tests/test_constraints.py` | 0.6 의 금지 사항(정렬 표준 API·라이브러리 화이트리스트)과 구조 요구(R3-1/R7-1/R7-2)를 AST 로 강제 |
+| `tests/test_readme_refs.py` | 0.10 이 코드를 가리키는 `main.py:줄번호` 근거가 아직 참인지 |
+
+마지막 항목이 특이해 보이지만 이유가 있다. 0.10 은 판정 근거를 전부 `파일:줄번호` 로 적는데,
+**줄번호는 리팩터링에 견디지 못하는 좌표다.** `main.py` 위쪽에 한 줄만 끼워 넣어도 아래 근거 70개가
+조용히 거짓이 된다. 이 검사는 README 가 스스로 인용해 둔 코드 조각이 정말 그 줄에 있는지 대조한다
+(기댓값을 따로 적지 않으므로 같은 사실이 두 곳에 생기지 않는다).
+
+### 검사가 정말 깨지는지 확인한 기록
+
+깨지지 않는 검사는 검사가 아니다. 도입 시점에 각 불변식을 한 번씩 일부러 부숴
+빨간 불을 확인하고 원복했다(2026-09-21).
+
+| 일부러 넣은 결함 | 결과 |
+| --- | --- |
+| Kahn 의 `indeg[child] == 0` → `>= 0` | **3건 실패** — 위상 정렬 붕괴 |
+| 위상 정렬 tie-break 비교 `<` → `>` | **3건 실패** — 결정적 출력 순서 상실 |
+| 최단 경로 사전순 비교 `<` → `>` | **5건 실패** |
+| 머지 정렬 `<=` → `<` | **3건 실패** — 안정 정렬 아님 |
+| 역색인의 `token.lower()` → `token` | **14건 실패** |
+| `import heapq` 추가 | **3건 실패** — 제약 위반 + 줄 밀림 감지 |
+| `main.py` 맨 앞에 빈 줄 하나 삽입 | **2건 실패** — 0.10 줄번호 근거 밀림 감지 |
+| 0.10 의 절 이름 참조를 없는 절로 바꿈 | **1건 실패** |
+| 절 이름 참조를 다시 줄번호로 되돌림 | **2건 실패** |
+| REPL 종료 조건 `('exit','quit')` 를 없앰 | **2건 실패** — *검수 중 추가된 행* |
+
+> ⚠️ 드릴 도중 한 번, 돌연변이가 아니라 **오래된 `__pycache__` 바이트코드** 때문에 검사가
+> 거짓으로 통과한 적이 있다(수정 전후 파일 크기와 mtime 초가 같아 캐시가 유효 판정됨).
+> `.gitignore` 에 `__pycache__/` 를 넣은 이유이고, 검사 결과를 의심할 때 먼저 지워볼 곳이다.
+
+## 공통 규칙
+
+- 명령어는 대소문자 무관: `INIT`, `init` 모두 허용.
+- 공백을 포함하는 문자열 인자는 따옴표로 감쌉니다: `COMMIT "Add login feature"`.
+- 옵션 표기는 `--key=value` 형식: `SEARCH --author=Alice`, `LOG --sort-by=date`.
+- 입력이 잘못되면 `Invalid args`, 없는 브랜치/커밋은 `Unknown branch: <name>` / `Unknown commit: <hash>`를 출력합니다.
+
+## 지원 명령
+
+| 명령 | 설명 |
+| --- | --- |
+| `INIT <user_name>` | 저장소 초기화, `main` 브랜치 생성, 사용자 지정 |
+| `BRANCH <branch_name>` | 현재 HEAD에서 새 브랜치 생성 |
+| `SWITCH <branch_name>` | 다른 브랜치로 HEAD 이동 |
+| `COMMIT <message>` | 현재 HEAD를 부모로 하는 새 커밋 |
+| `LOG` | 부모가 자식보다 먼저 출력되는 위상 정렬(Kahn) 순서 |
+| `LOG --sort-by=date\|author` | 직접 구현한 머지 정렬로 정렬 |
+| `PATH <c1> <c2>` | 무방향 그래프로 본 최단 경로, 동률이면 사전순 최소 |
+| `ANCESTORS <commit_hash>` | 모든 조상 커밋 |
+| `SEARCH <keyword>` | 메시지 토큰 역색인 검색 (소문자 정규화) |
+| `SEARCH --author=<name>` | 작성자 역색인 검색 |
+| `exit` / `quit` | 종료 |
+
+## 핵심 자료구조와 알고리즘
+
+- **커밋 노드**: `hash`, `message`, `author`, `timestamp`, `parents`를 가지는 단순 객체.
+- **그래프**: 커밋 hash → 노드 매핑(`dict`)으로 O(1) 조회, 부모 리스트로 간선을 표현. 비순환을 보장하기 위해 새 커밋은 항상 기존 HEAD를 부모로 가집니다.
+- **위상 정렬 (LOG)**: Kahn 알고리즘으로 in-degree=0인 노드부터 출력. 같은 레벨에서는 `(timestamp, hash)` 오름차순으로 결정적 출력을 만듭니다.
+- **최단 경로 (PATH)**: 부모 간선을 무방향으로 본 BFS. 같은 길이 경로가 여러 개일 때는, BFS 레벨별로 `best[v] = min(best[u] + "->" + v)`를 계산해 사전순 최소 문자열을 산출합니다. 모든 hash 길이가 같아 같은 거리의 경로 문자열들은 길이가 같으므로 사전 비교가 정확합니다.
+- **조상 탐색 (ANCESTORS)**: 부모 방향 DFS로 도달 가능한 모든 노드를 수집.
+- **역색인**:
+  - `keyword(lower) -> [hash...]`: 커밋 메시지를 공백으로 분리, `lower()`로 정규화해 등록. 검색 시 전체 커밋 순회 없이 `O(1)` 사전 조회 + 결과 개수만큼만 출력.
+  - `author -> [hash...]`: 작성자 검색용.
+- **정렬**: 표준 `sorted()` / `list.sort()` 사용 금지 요건에 따라 **머지 정렬을 직접 구현**. 평균/최악 모두 `O(n log n)`이고, 비교 시 `<=`를 사용해 **안정 정렬**을 유지합니다.
+
+## 사용 예시
+
+```
+mini-git> init "Alice"
+Initialized repository.
+Current branch: main
+Current user: Alice
+
+mini-git> commit "Initial commit"
+[main 7f3a9c1] Initial commit
+
+mini-git> branch feature
+Created branch: feature
+
+mini-git> switch feature
+Switched to branch: feature
+
+mini-git> commit "Add login feature"
+[feature 2b8e4f2] Add login feature
+
+mini-git> switch main
+Switched to branch: main
+
+mini-git> commit "Add payment feature"
+[main 9c1d3a7] Add payment feature
+
+mini-git> log
+commit 7f3a9c1 (Alice, 2026-05-11 22:30:00)
+Initial commit
+commit 2b8e4f2 (Alice, 2026-05-11 22:30:05) [feature]
+Add login feature
+commit 9c1d3a7 (Alice, 2026-05-11 22:30:10) [main]
+Add payment feature
+
+mini-git> path 7f3a9c1 9c1d3a7
+Path: 7f3a9c1->9c1d3a7
+
+mini-git> search "login"
+Found 1 commit:
+- 2b8e4f2: Add login feature
+
+mini-git> search --author=Alice
+Found 3 commits:
+- 7f3a9c1: Initial commit
+- 2b8e4f2: Add login feature
+- 9c1d3a7: Add payment feature
+
+mini-git> log --sort-by=author
+commit 7f3a9c1 (Alice, 2026-05-11 22:30:00)
+Initial commit
+commit 2b8e4f2 (Alice, 2026-05-11 22:30:05)
+Add login feature
+commit 9c1d3a7 (Alice, 2026-05-11 22:30:10)
+Add payment feature
+```
+
+## 학습 체크리스트
+
+- 커밋 그래프는 왜 DAG인가? → 새 커밋은 항상 기존 노드(과거)를 부모로만 가리키므로 사이클이 생길 수 없다.
+- 왜 LOG는 위상 정렬인가? → 자식보다 부모가 먼저 보여야 변경의 인과관계를 따라갈 수 있다.
+- PATH 동률을 어떻게 결정하는가? → 같은 길이의 경로 문자열들 중 사전순 최소.
+- 머지 정렬 시간복잡도와 안정성은? → 평균/최악 `O(n log n)`, `<=` 비교로 안정 정렬.
+- 역색인이 빠른 이유? → 메시지 전체를 매번 토큰화/검사하는 `O(N·M)` 대신, 사전 조회 `O(1)` + 결과 개수만큼만 본다.
+
+## 제약/범위
+
+- 파일 내용 추적 없음 (커밋 메타데이터 중심).
+- 네트워크 통신 없음.
+- 데이터 영속화 없음 (메모리 동작).
+- 그래프 전용 라이브러리 미사용, 정렬 표준 API 미사용.
+
+---
+
+> 이하는 과제 명세 원문과 긴 해설(§0)이다. 원래 문서에서는 맨 앞에 있었고, 이 README 에서는 실행에 필요한 내용을 앞으로 옮기면서 여기로 내렸다. 내용은 삭제하지 않았다.
+
 ## 0. 과제 명세 (원본 미션 요구사항)
 
 > 출처: `codyssey_assignments/B3-2.pdf` — 원문 요구사항을 그대로 옮기고, 해설은 💡 로 구분했다.
@@ -340,12 +539,12 @@ Add payment feature
 ### 0.10 ✅ 과제 수행 점검 (명세 대조)
 
 > 점검 방식: 저장소의 실제 소스를 명세의 요구사항 ID 와 1:1 대조. 판정 근거는 파일 경로로 명시.
-> 저장소 구성은 `main.py`(473줄) + `README.md` + `pyproject.toml` + `tests/` 이며, README 주장은 모두 소스에서 재확인했다. 추가로 실제 REPL 세션과 합성 그래프(diamond)로 실행 검증했다(아래 🧪 절).
+> 저장소 구성은 `main.py`(473줄) + `README.md` + `pyproject.toml` + `tests/` 이며, README 주장은 모두 소스에서 재확인했다. 추가로 실제 REPL 세션과 합성 그래프(diamond)로 실행 검증했다(「🧪 실행 검증 기록」 절).
 
 **종합 판정: 충족** — 필수 30개 중 충족 30 / 부분 0 / 미충족 0 / 로컬검증불가 0
 (보너스 3개는 전부 미구현: B1 ❌ / B2 ❌ / B3 ❌)
 
-> **2026-09-21 추가.** 이 표는 오랫동안 ✅ 체크만 있고 실행되는 검사는 0건이었다. 문서에만 적힌 규칙은 규칙이 아니라 희망이다. 아래 판정의 상당수를 이제 `tests/` 의 자동 검사 **70개**가 함께 지킨다 (`python3 -m unittest discover -s tests`, 0.4초). 어떤 검사가 무엇을 고정하는지와, **각 검사를 일부러 깨뜨려 빨간 불을 확인한 기록**은 아래 「테스트」 절에 있다.
+> **2026-09-21 추가.** 이 표는 오랫동안 ✅ 체크만 있고 실행되는 검사는 0건이었다. 문서에만 적힌 규칙은 규칙이 아니라 희망이다. 아래 판정의 상당수를 이제 `tests/` 의 자동 검사 **70개**가 함께 지킨다 (`python3 -m unittest discover -s tests`, 0.4초). 어떤 검사가 무엇을 고정하는지와, **각 검사를 일부러 깨뜨려 빨간 불을 확인한 기록**은 「테스트」 절에 있다.
 
 | ID | 요구사항 (요약) | 판정 | 근거 / 비고 |
 | --- | --- | --- | --- |
@@ -412,7 +611,7 @@ Add payment feature
 
 > 저장소는 **읽기 전용으로만** 다뤘다. `main.py` 를 스크래치패드(`…/scratchpad/b32run/`)에 복사해 컴파일·실행했고, 저장소 안에서는 어떤 명령도 실행/수정하지 않았다(`git status --porcelain` 결과 clean 확인).
 
-1. `python3 --version` → **Python 3.14.4** (명세 요구 3.10+ 충족)
+1. `python3 --version` → **Python 3.12.3** (명세 요구 3.10+ 충족)
 2. `python3 -m py_compile main.py` (복사본) → **PY_COMPILE_OK** (문법 오류 없음)
 3. `grep -nE '\bsorted\(|\.sort\(|heapq|bisect|most_common|functools\.cmp|networkx|igraph|graph_tool' main.py` → **소스 0건**(README 설명문 1줄만 매칭) — R4-1 / 라이브러리 제한 위반 없음
 4. **REPL 전 구간 스크립트 실행** (`builtins.input` 을 대체해 `main()` 을 그대로 구동, 커밋 hash는 출력에서 추출해 후속 명령에 주입):
@@ -436,166 +635,3 @@ Add payment feature
    - `topological_log()` → `['aaaaaa1','bbbbbb2','ccccc03','ddddd04']`, 전 간선에 대해 `pos[parent] < pos[child]` **True**, 출력 개수 = 커밋 개수 (R5-5)
    - `merge_sort` : 동률 키 입력 `[(3,a),(1,b),(3,c),(2,d),(1,e)]` → `[(1,b),(1,e),(2,d),(3,a),(3,c)]` — **안정성 확인**. 난수 200개 정렬 결과 정렬성·길이 보존 True (R4-1/R4-2)
 6. 미실행 항목: 없음. (네트워크·설치가 필요한 검증 항목 자체가 이 과제에는 없다.)
-
----
-
-## 실행
-
-```
-python main.py
-```
-
-`mini-git>` 프롬프트가 뜨면 명령을 입력하고, `exit` 또는 `quit`으로 종료합니다.
-
-> Python 3.10+ 필요. 표준 라이브러리만 사용합니다. 데이터는 메모리에만 저장되며 종료 시 사라집니다.
-
-## 테스트
-
-요구사항은 README 의 ✅ 표가 아니라 **실행되는 검사**가 지킨다.
-표준 라이브러리 `unittest` 로만 작성돼 있어 설치할 것이 없다.
-
-```
-python3 -m unittest discover -s tests
-```
-
-`pytest` 가 설치돼 있으면 `pytest -q` 로도 같은 검사가 돈다(`pyproject.toml` 에 설정).
-
-| 파일 | 고정하는 불변식 |
-| --- | --- |
-| `tests/test_minigit.py` | 위상 정렬(부모가 자식보다 먼저), 최단 경로(간선 수 최소 → 동률이면 사전순 최소), 머지 정렬 **안정성**, 역색인 결과 == 전체 순회 결과 |
-| `tests/test_cli.py` | `main.py` 를 인터프리터에 넘기면 REPL 이 실제로 뜨고, 잘못된 입력 12종에도 죽지 않는다 |
-| `tests/test_constraints.py` | 0.6 의 금지 사항(정렬 표준 API·라이브러리 화이트리스트)과 구조 요구(R3-1/R7-1/R7-2)를 AST 로 강제 |
-| `tests/test_readme_refs.py` | 0.10 이 코드를 가리키는 `main.py:줄번호` 근거가 아직 참인지 |
-
-마지막 항목이 특이해 보이지만 이유가 있다. 0.10 은 판정 근거를 전부 `파일:줄번호` 로 적는데,
-**줄번호는 리팩터링에 견디지 못하는 좌표다.** `main.py` 위쪽에 한 줄만 끼워 넣어도 아래 근거 70개가
-조용히 거짓이 된다. 이 검사는 README 가 스스로 인용해 둔 코드 조각이 정말 그 줄에 있는지 대조한다
-(기댓값을 따로 적지 않으므로 같은 사실이 두 곳에 생기지 않는다).
-
-### 검사가 정말 깨지는지 확인한 기록
-
-깨지지 않는 검사는 검사가 아니다. 도입 시점에 각 불변식을 한 번씩 일부러 부숴
-빨간 불을 확인하고 원복했다(2026-09-21).
-
-| 일부러 넣은 결함 | 결과 |
-| --- | --- |
-| Kahn 의 `indeg[child] == 0` → `>= 0` | **3건 실패** — 위상 정렬 붕괴 |
-| 위상 정렬 tie-break 비교 `<` → `>` | **3건 실패** — 결정적 출력 순서 상실 |
-| 최단 경로 사전순 비교 `<` → `>` | **5건 실패** |
-| 머지 정렬 `<=` → `<` | **3건 실패** — 안정 정렬 아님 |
-| 역색인의 `token.lower()` → `token` | **14건 실패** |
-| `import heapq` 추가 | **3건 실패** — 제약 위반 + 줄 밀림 감지 |
-| `main.py` 맨 앞에 빈 줄 하나 삽입 | **2건 실패** — 0.10 줄번호 근거 밀림 감지 |
-| 0.10 의 절 이름 참조를 없는 절로 바꿈 | **1건 실패** |
-| 절 이름 참조를 다시 줄번호로 되돌림 | **2건 실패** |
-| REPL 종료 조건 `('exit','quit')` 를 없앰 | **2건 실패** — *검수 중 추가된 행* |
-
-> ⚠️ 드릴 도중 한 번, 돌연변이가 아니라 **오래된 `__pycache__` 바이트코드** 때문에 검사가
-> 거짓으로 통과한 적이 있다(수정 전후 파일 크기와 mtime 초가 같아 캐시가 유효 판정됨).
-> `.gitignore` 에 `__pycache__/` 를 넣은 이유이고, 검사 결과를 의심할 때 먼저 지워볼 곳이다.
-
-## 공통 규칙
-
-- 명령어는 대소문자 무관: `INIT`, `init` 모두 허용.
-- 공백을 포함하는 문자열 인자는 따옴표로 감쌉니다: `COMMIT "Add login feature"`.
-- 옵션 표기는 `--key=value` 형식: `SEARCH --author=Alice`, `LOG --sort-by=date`.
-- 입력이 잘못되면 `Invalid args`, 없는 브랜치/커밋은 `Unknown branch: <name>` / `Unknown commit: <hash>`를 출력합니다.
-
-## 지원 명령
-
-| 명령 | 설명 |
-| --- | --- |
-| `INIT <user_name>` | 저장소 초기화, `main` 브랜치 생성, 사용자 지정 |
-| `BRANCH <branch_name>` | 현재 HEAD에서 새 브랜치 생성 |
-| `SWITCH <branch_name>` | 다른 브랜치로 HEAD 이동 |
-| `COMMIT <message>` | 현재 HEAD를 부모로 하는 새 커밋 |
-| `LOG` | 부모가 자식보다 먼저 출력되는 위상 정렬(Kahn) 순서 |
-| `LOG --sort-by=date\|author` | 직접 구현한 머지 정렬로 정렬 |
-| `PATH <c1> <c2>` | 무방향 그래프로 본 최단 경로, 동률이면 사전순 최소 |
-| `ANCESTORS <commit_hash>` | 모든 조상 커밋 |
-| `SEARCH <keyword>` | 메시지 토큰 역색인 검색 (소문자 정규화) |
-| `SEARCH --author=<name>` | 작성자 역색인 검색 |
-| `exit` / `quit` | 종료 |
-
-## 핵심 자료구조와 알고리즘
-
-- **커밋 노드**: `hash`, `message`, `author`, `timestamp`, `parents`를 가지는 단순 객체.
-- **그래프**: 커밋 hash → 노드 매핑(`dict`)으로 O(1) 조회, 부모 리스트로 간선을 표현. 비순환을 보장하기 위해 새 커밋은 항상 기존 HEAD를 부모로 가집니다.
-- **위상 정렬 (LOG)**: Kahn 알고리즘으로 in-degree=0인 노드부터 출력. 같은 레벨에서는 `(timestamp, hash)` 오름차순으로 결정적 출력을 만듭니다.
-- **최단 경로 (PATH)**: 부모 간선을 무방향으로 본 BFS. 같은 길이 경로가 여러 개일 때는, BFS 레벨별로 `best[v] = min(best[u] + "->" + v)`를 계산해 사전순 최소 문자열을 산출합니다. 모든 hash 길이가 같아 같은 거리의 경로 문자열들은 길이가 같으므로 사전 비교가 정확합니다.
-- **조상 탐색 (ANCESTORS)**: 부모 방향 DFS로 도달 가능한 모든 노드를 수집.
-- **역색인**:
-  - `keyword(lower) -> [hash...]`: 커밋 메시지를 공백으로 분리, `lower()`로 정규화해 등록. 검색 시 전체 커밋 순회 없이 `O(1)` 사전 조회 + 결과 개수만큼만 출력.
-  - `author -> [hash...]`: 작성자 검색용.
-- **정렬**: 표준 `sorted()` / `list.sort()` 사용 금지 요건에 따라 **머지 정렬을 직접 구현**. 평균/최악 모두 `O(n log n)`이고, 비교 시 `<=`를 사용해 **안정 정렬**을 유지합니다.
-
-## 사용 예시
-
-```
-mini-git> init "Alice"
-Initialized repository.
-Current branch: main
-Current user: Alice
-
-mini-git> commit "Initial commit"
-[main 7f3a9c1] Initial commit
-
-mini-git> branch feature
-Created branch: feature
-
-mini-git> switch feature
-Switched to branch: feature
-
-mini-git> commit "Add login feature"
-[feature 2b8e4f2] Add login feature
-
-mini-git> switch main
-Switched to branch: main
-
-mini-git> commit "Add payment feature"
-[main 9c1d3a7] Add payment feature
-
-mini-git> log
-commit 7f3a9c1 (Alice, 2026-05-11 22:30:00)
-Initial commit
-commit 2b8e4f2 (Alice, 2026-05-11 22:30:05) [feature]
-Add login feature
-commit 9c1d3a7 (Alice, 2026-05-11 22:30:10) [main]
-Add payment feature
-
-mini-git> path 7f3a9c1 9c1d3a7
-Path: 7f3a9c1->9c1d3a7
-
-mini-git> search "login"
-Found 1 commit:
-- 2b8e4f2: Add login feature
-
-mini-git> search --author=Alice
-Found 3 commits:
-- 7f3a9c1: Initial commit
-- 2b8e4f2: Add login feature
-- 9c1d3a7: Add payment feature
-
-mini-git> log --sort-by=author
-commit 7f3a9c1 (Alice, 2026-05-11 22:30:00)
-Initial commit
-commit 2b8e4f2 (Alice, 2026-05-11 22:30:05)
-Add login feature
-commit 9c1d3a7 (Alice, 2026-05-11 22:30:10)
-Add payment feature
-```
-
-## 학습 체크리스트
-
-- 커밋 그래프는 왜 DAG인가? → 새 커밋은 항상 기존 노드(과거)를 부모로만 가리키므로 사이클이 생길 수 없다.
-- 왜 LOG는 위상 정렬인가? → 자식보다 부모가 먼저 보여야 변경의 인과관계를 따라갈 수 있다.
-- PATH 동률을 어떻게 결정하는가? → 같은 길이의 경로 문자열들 중 사전순 최소.
-- 머지 정렬 시간복잡도와 안정성은? → 평균/최악 `O(n log n)`, `<=` 비교로 안정 정렬.
-- 역색인이 빠른 이유? → 메시지 전체를 매번 토큰화/검사하는 `O(N·M)` 대신, 사전 조회 `O(1)` + 결과 개수만큼만 본다.
-
-## 제약/범위
-
-- 파일 내용 추적 없음 (커밋 메타데이터 중심).
-- 네트워크 통신 없음.
-- 데이터 영속화 없음 (메모리 동작).
-- 그래프 전용 라이브러리 미사용, 정렬 표준 API 미사용.
